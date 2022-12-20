@@ -30,12 +30,28 @@ const findMetaMaskAccount = async () => {
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState("");
-  useEffect(() => {
-    findMetaMaskAccount().then((account) => {
-      if (account != null) {
-        setCurrentAccount(account);
+
+  const connectWallet = async () => {
+    try {
+      const ethereum = getEthereumObject();
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
       }
-    });
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    const account = findMetaMaskAccount();
+    if (account !== null) {
+      setCurrentAccount(account);
+    }
   }, []);
 
   return (
@@ -44,11 +60,11 @@ export default function App() {
         <div className="header">👋 Hey there!</div>
 
         <div className="bio">
-          I am farza and I worked on self-driving cars so that's pretty cool
+          I am Kirtan and I worked on self-driving cars so that's pretty cool
           right? Connect your Ethereum wallet and wave at me!
         </div>
 
-        <button className="waveButton" onClick={null}>
+        <button className="waveButton" onClick={connectWallet}>
           Wave at Me
         </button>
       </div>
